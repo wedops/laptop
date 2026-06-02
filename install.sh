@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
 #
-# install.sh — the curl entrypoint for a brand-new Mac that has nothing.
+# install.sh — one-command setup for a fresh Mac.
 #
-# A fresh Mac ships with `curl` but not `git`, so it can't clone this repo yet.
-# This script breaks the chicken-and-egg: it installs Homebrew (which brings the
-# Xcode Command Line Tools, and with them `git`), clones the repo, then hands off
-# to `./mac` for the rest. Idempotent — safe to re-run.
+# Installs Homebrew (which brings git via the Xcode Command Line Tools), clones
+# this repo, and hands off to ./mac. Idempotent — safe to re-run.
 #
 # Run it with:
 #
-#   curl -fsSL https://raw.githubusercontent.com/wedops/laptop/main/install.sh | bash
-#
-# Once git exists you can also just clone and run ./mac directly.
+#   curl -fsSL https://weddingoperatingsystems.com/install.sh | bash
 
 set -euo pipefail
 

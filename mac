@@ -6,9 +6,8 @@
 # system dependencies, wires up the shell, and provisions Node. Safe to re-run —
 # every step checks before it acts, so on a configured machine it's a near no-op.
 #
-# Usage:
-#   git clone https://github.com/wedops/laptop.git ~/laptop
-#   cd ~/laptop && ./mac
+# Run via the install entrypoint, which fetches this repo first:
+#   curl -fsSL https://weddingoperatingsystems.com/install.sh | bash
 #
 # Tailored to the wedops stack: Homebrew + a Brewfile, mise for Node, direnv for
 # per-repo secrets, starship for the prompt. No oh-my-zsh, no nvm, no asdf.
