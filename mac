@@ -139,16 +139,17 @@ cat <<'EOF'
 
   ✅ Machine provisioned. Open a new terminal (or `source ~/.zshrc`).
 
-  Next steps for a repo that pulls @wedops/* from GitHub Packages
-  (e.g. the wedops monorepo):
+  Secrets come from 1Password — nothing gets pasted or written to disk:
 
-      git clone …                       # clone the repo
-      cp .envrc.example .envrc          # then paste a GitHub PAT into .envrc
-      direnv allow                      # load the token for this directory
+    1. 1Password app → Settings → Developer → turn on
+       "Integrate with 1Password CLI" and Touch ID unlock.
+    2. Sign in once:   eval "$(op signin)"
+
+  After that, any repo just works — its committed .envrc holds 1Password
+  references (not secrets), so you only:
+
+      git clone …
+      direnv allow      # resolves tokens from your vault via Touch ID
       npm install
-
-  The PAT needs the read:packages scope (write:packages too if you'll
-  publish). Generate one at https://github.com/settings/tokens, or pull it
-  from 1Password:  op read "op://Private/github-packages-pat/token"
 
 EOF
