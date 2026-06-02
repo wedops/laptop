@@ -9,10 +9,12 @@ Set up a fresh Mac for [wedops](https://github.com/wedops) development in one id
 A fresh Mac has `curl` but not `git`, so it can't clone this repo yet. Paste this into Terminal — it installs Homebrew (which brings `git` via the Xcode Command Line Tools), clones the repo, and runs the rest:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/wedops/laptop/main/bootstrap)"
+curl -fsSL https://raw.githubusercontent.com/wedops/laptop/main/install.sh | bash
 ```
 
 You'll be asked for your macOS password once (Homebrew + Command Line Tools need it).
+
+> Once `wedops` has a domain, this can become a short `curl -fsSL https://<domain>/install.sh | bash` that redirects to the raw file above.
 
 ### Already have git
 

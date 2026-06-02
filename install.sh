@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# bootstrap — the curl entrypoint for a brand-new Mac that has nothing.
+# install.sh — the curl entrypoint for a brand-new Mac that has nothing.
 #
 # A fresh Mac ships with `curl` but not `git`, so it can't clone this repo yet.
 # This script breaks the chicken-and-egg: it installs Homebrew (which brings the
@@ -9,7 +9,7 @@
 #
 # Run it with:
 #
-#   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/wedops/laptop/main/bootstrap)"
+#   curl -fsSL https://raw.githubusercontent.com/wedops/laptop/main/install.sh | bash
 #
 # Once git exists you can also just clone and run ./mac directly.
 
