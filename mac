@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+#
+# mac — provision a fresh Mac for wedops development.
+#
+# Inspired by thoughtbot's `laptop`: one idempotent pass that installs the
+# system dependencies, wires up the shell, and provisions Node. Safe to re-run —
+# every step checks before it acts, so on a configured machine it's a near no-op.
+#
+# Usage:
+#   git clone https://github.com/wedops/laptop.git ~/laptop
+#   cd ~/laptop && ./mac
+#
+# Tailored to the wedops stack: Homebrew + a Brewfile, mise for Node, direnv for
+# per-repo secrets, starship for the prompt. No oh-my-zsh, no nvm, no asdf.
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+fancy_echo() {
+  local fmt="$1"; shift
+  # shellcheck disable=SC2059
+  printf "\n\033[1;34m==>\033[0m \033[1m$fmt\033[0m\n" "$@"
+}
+
+# Append a line to ~/.zshrc only if it is not already present, so re-runs (and
+# machines configured by hand) don't accumulate duplicates.
+ZSHRC="$HOME/.zshrc"
+append_to_zshrc() {
+  local line="$1"
+  [ -f "$ZSHRC" ] || touch "$ZSHRC"
+  if ! grep -Fqx "$line" "$ZSHRC"; then
+    printf '%s\n' "$line" >> "$ZSHRC"
+    fancy_echo "Added to ~/.zshrc: %s" "$line"
+  fi
+}
+
+cd "$(dirname "$0")"
+REPO_ROOT="$(pwd)"
+
+if [ "$(uname -s)" != "Darwin" ]; then
+  echo "This script targets macOS." >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# 1. Xcode Command Line Tools (git, compilers — needed by Homebrew)
+# ---------------------------------------------------------------------------
+
+if ! xcode-select -p >/dev/null 2>&1; then
+  fancy_echo "Installing Xcode Command Line Tools (accept the GUI prompt)…"
+  xcode-select --install
+  echo "Re-run ./mac once the Command Line Tools finish installing." >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# 2. Homebrew
+# ---------------------------------------------------------------------------
+
+# Apple Silicon installs to /opt/homebrew.
+BREW_PREFIX="/opt/homebrew"
+
+if ! command -v brew >/dev/null 2>&1; then
+  fancy_echo "Installing Homebrew…"
+  /bin/bash -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Make brew available now and on future login shells.
+  if ! grep -Fq 'brew shellenv' "$HOME/.zprofile" 2>/dev/null; then
+    printf '\neval "$(%s/bin/brew shellenv zsh)"\n' "$BREW_PREFIX" >> "$HOME/.zprofile"
+  fi
+  eval "$("$BREW_PREFIX/bin/brew" shellenv)"
+else
+  fancy_echo "Homebrew already installed — updating…"
+  brew update
+fi
+
+# ---------------------------------------------------------------------------
+# 3. System dependencies (Brewfile)
+# ---------------------------------------------------------------------------
+
+fancy_echo "Installing system dependencies from Brewfile…"
+brew bundle --file="$REPO_ROOT/Brewfile"
+
+# ---------------------------------------------------------------------------
+# 4. Shell integration (~/.zshrc)
+# ---------------------------------------------------------------------------
+#
+# The lines a wedops machine relies on. append_to_zshrc skips any that already
+# exist, so a hand-configured shell is left untouched.
+
+fancy_echo "Wiring up the shell (idempotent)…"
+append_to_zshrc 'export PATH="$HOME/.local/bin:$PATH"'
+append_to_zshrc 'eval "$(mise activate zsh)"'
+append_to_zshrc 'eval "$(starship init zsh)"'
+append_to_zshrc 'eval "$(direnv hook zsh)"'
+
+# ---------------------------------------------------------------------------
+# 5. Node via mise
+# ---------------------------------------------------------------------------
+#
+# mise reads ~/.config/mise/config.toml. If you don't have one yet, default to
+# the latest LTS (currently Node 24, which satisfies the repos' "node": ">=24").
+
+MISE_CONFIG="$HOME/.config/mise/config.toml"
+if [ ! -f "$MISE_CONFIG" ]; then
+  mkdir -p "$(dirname "$MISE_CONFIG")"
+  printf '[tools]\nnode = "lts"\n' > "$MISE_CONFIG"
+  fancy_echo "Created $MISE_CONFIG (node = \"lts\")."
+fi
+
+fancy_echo "Provisioning Node via mise…"
+eval "$(mise activate bash)"
+mise install
+fancy_echo "Node: $(mise exec -- node --version)  npm: $(mise exec -- npm --version)"
+
+# ---------------------------------------------------------------------------
+# Done
+# ---------------------------------------------------------------------------
+
+cat <<'EOF'
+
+  ✅ Machine provisioned. Open a new terminal (or `source ~/.zshrc`).
+
+  Next steps for a repo that pulls @wedops/* from GitHub Packages
+  (e.g. the wedops monorepo):
+
+      git clone …                       # clone the repo
+      cp .envrc.example .envrc          # then paste a GitHub PAT into .envrc
+      direnv allow                      # load the token for this directory
+      npm install
+
+  The PAT needs the read:packages scope (write:packages too if you'll
+  publish). Generate one at https://github.com/settings/tokens, or pull it
+  from 1Password:  op read "op://Private/github-packages-pat/token"
+
+EOF
