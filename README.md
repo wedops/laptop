@@ -4,13 +4,25 @@ Set up a fresh Mac for [wedops](https://github.com/wedops) development in one id
 
 ## Install
 
+### Brand-new Mac (no git yet)
+
+A fresh Mac has `curl` but not `git`, so it can't clone this repo yet. Paste this into Terminal — it installs Homebrew (which brings `git` via the Xcode Command Line Tools), clones the repo, and runs the rest:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/wedops/laptop/main/bootstrap)"
+```
+
+You'll be asked for your macOS password once (Homebrew + Command Line Tools need it).
+
+### Already have git
+
 ```bash
 git clone https://github.com/wedops/laptop.git ~/laptop
 cd ~/laptop
 ./mac
 ```
 
-It's safe to run more than once — every step checks before it acts, so re-running on a configured machine is close to a no-op. Open a new terminal afterward (or `source ~/.zshrc`).
+Either way it's safe to run more than once — every step checks before it acts, so re-running on a configured machine is close to a no-op. Open a new terminal afterward (or `source ~/.zshrc`).
 
 ## What it does
 
