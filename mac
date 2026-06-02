@@ -117,6 +117,21 @@ mise install
 fancy_echo "Node: $(mise exec -- node --version)  npm: $(mise exec -- npm --version)"
 
 # ---------------------------------------------------------------------------
+# 6. Claude Code
+# ---------------------------------------------------------------------------
+#
+# Anthropic's native installer drops the binary into ~/.local/bin (already on
+# PATH from step 4) — it's not a Homebrew package, so it lives here rather than
+# in the Brewfile. Skip if it's already present; `claude update` upgrades it.
+
+if command -v claude >/dev/null 2>&1 || [ -x "$HOME/.local/bin/claude" ]; then
+  fancy_echo "Claude Code already installed — skipping (run 'claude update' to upgrade)."
+else
+  fancy_echo "Installing Claude Code…"
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
+
+# ---------------------------------------------------------------------------
 # Done
 # ---------------------------------------------------------------------------
 
