@@ -135,10 +135,12 @@ fi
 # 7. SSH via the 1Password agent
 # ---------------------------------------------------------------------------
 #
-# Point SSH at 1Password's agent so git uses your vault-stored key (biometric
-# approval, no private key on disk) — the SSH counterpart to the op:// secrets.
-# Idempotent, and the OrbStack include (which must stay first) is left untouched
-# since this Host block is appended after it. Takes effect once you enable the
+# Two pieces so git uses your vault-stored key (biometric approval, no private
+# key on disk) - the SSH counterpart to the op:// secrets:
+#   a) ~/.ssh/config       -> point SSH at the 1Password agent socket
+#   b) agent.toml          -> tell the agent which keys to offer
+# Both idempotent. The OrbStack include (which must stay first) is left untouched
+# since the Host block is appended after it. Takes effect once you enable the
 # agent in the 1Password app (see the summary below).
 
 SSH_CONFIG="$HOME/.ssh/config"
@@ -146,8 +148,20 @@ ONEP_AGENT_SOCK='~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.soc
 mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
 [ -f "$SSH_CONFIG" ] || touch "$SSH_CONFIG"
 if ! grep -Fq '1password/t/agent.sock' "$SSH_CONFIG"; then
-  fancy_echo "Pointing SSH at the 1Password agent…"
+  fancy_echo "Pointing SSH at the 1Password agent..."
   printf '\n# Use the 1Password SSH agent for all hosts (key lives in your vault).\nHost *\n  IdentityAgent "%s"\n' "$ONEP_AGENT_SOCK" >> "$SSH_CONFIG"
+fi
+
+# Tell the 1Password agent which keys to serve. Newer 1Password offers NOTHING
+# until a key is listed in agent.toml, so without this you get "permission
+# denied" even with the agent enabled. We allow the whole wedops vault (where the
+# shared git key lives). Idempotent; appends if not already present.
+AGENT_TOML="$HOME/.config/1Password/ssh/agent.toml"
+mkdir -p "$(dirname "$AGENT_TOML")"
+[ -f "$AGENT_TOML" ] || touch "$AGENT_TOML"
+if ! grep -q 'wedops' "$AGENT_TOML"; then
+  fancy_echo "Letting the 1Password agent serve keys from the wedops vault..."
+  printf '\n[[ssh-keys]]\nvault = "wedops"\n' >> "$AGENT_TOML"
 fi
 
 # ---------------------------------------------------------------------------
