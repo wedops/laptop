@@ -28,16 +28,23 @@ You'll be asked for your macOS password once. It's safe to run more than once �
 - Wires `mise`, `starship`, and `direnv` into `~/.zshrc` (only if not already there)
 - Provisions **Node** via mise (latest LTS — Node 24+, what the repos require)
 - Installs **Claude Code** via Anthropic's native installer (into `~/.local/bin`)
+- Points `~/.ssh/config` at the **1Password SSH agent** (so `git` uses your vault-stored key)
 
 It does **not** touch any individual repo. Cloning a repo and authing is repo-specific — the script prints those next steps when it finishes.
 
-## Secrets
+## Secrets & SSH
 
-Repos pull secrets from **1Password** rather than storing them on disk. Each repo's committed `.envrc` holds an `op://…` *reference* (not the value); direnv resolves it through the 1Password CLI. After the install finishes:
+Both secrets and SSH keys come from **1Password** rather than living on disk:
 
-1. 1Password app → **Settings → Developer** → enable **"Integrate with 1Password CLI"** and Touch ID unlock.
+- Each repo's committed `.envrc` holds an `op://…` *reference* (not the value); direnv resolves it through the 1Password CLI.
+- `mac` points `~/.ssh/config` at the 1Password SSH agent, so `git` over SSH uses your vault-stored key with a biometric tap — no private key on disk.
+
+After the install finishes, do the one-time 1Password setup:
+
+1. 1Password app → **Settings → Developer** → enable **"Integrate with 1Password CLI"**, **"Use the SSH agent"**, and Touch ID unlock.
 2. `eval "$(op signin)"` once per session.
-3. In any repo, `direnv allow` — tokens resolve from your vault via Touch ID. Nothing to paste.
+3. Put your SSH key in 1Password (import your existing one or create a new SSH Key item), with its public key on GitHub.
+4. `git clone git@github.com:…` and `direnv allow` in any repo — keys and tokens resolve from your vault via Touch ID. Nothing to paste.
 
 ## Customizing
 

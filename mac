@@ -132,6 +132,25 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# 7. SSH via the 1Password agent
+# ---------------------------------------------------------------------------
+#
+# Point SSH at 1Password's agent so git uses your vault-stored key (biometric
+# approval, no private key on disk) — the SSH counterpart to the op:// secrets.
+# Idempotent, and the OrbStack include (which must stay first) is left untouched
+# since this Host block is appended after it. Takes effect once you enable the
+# agent in the 1Password app (see the summary below).
+
+SSH_CONFIG="$HOME/.ssh/config"
+ONEP_AGENT_SOCK='~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock'
+mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+[ -f "$SSH_CONFIG" ] || touch "$SSH_CONFIG"
+if ! grep -Fq '1password/t/agent.sock' "$SSH_CONFIG"; then
+  fancy_echo "Pointing SSH at the 1Password agent…"
+  printf '\n# Use the 1Password SSH agent for all hosts (key lives in your vault).\nHost *\n  IdentityAgent "%s"\n' "$ONEP_AGENT_SOCK" >> "$SSH_CONFIG"
+fi
+
+# ---------------------------------------------------------------------------
 # Done
 # ---------------------------------------------------------------------------
 
@@ -139,17 +158,22 @@ cat <<'EOF'
 
   ✅ Machine provisioned. Open a new terminal (or `source ~/.zshrc`).
 
-  Secrets come from 1Password — nothing gets pasted or written to disk:
+  Secrets AND SSH keys come from 1Password — nothing is pasted or stored
+  on disk. One-time 1Password setup:
 
-    1. 1Password app → Settings → Developer → turn on
-       "Integrate with 1Password CLI" and Touch ID unlock.
+    1. 1Password app → Settings → Developer → turn on:
+         • "Integrate with 1Password CLI"   (tokens)
+         • "Use the SSH agent"              (git over SSH)
+         • Touch ID unlock
     2. Sign in once:   eval "$(op signin)"
+    3. Put your SSH key in 1Password — import the existing one or create a
+       new SSH Key item — and make sure its public key is on GitHub.
 
-  After that, any repo just works — its committed .envrc holds 1Password
-  references (not secrets), so you only:
+  SSH is already pointed at the 1Password agent (~/.ssh/config), so any repo
+  just works:
 
-      git clone …
-      direnv allow      # resolves tokens from your vault via Touch ID
+      git clone git@github.com:…   # biometric tap, no key files
+      direnv allow                 # .envrc pulls tokens from your vault
       npm install
 
 EOF
