@@ -25,3 +25,4 @@ cask "orbstack"      # lightweight Docker engine — provides the `docker` CLI
 cask "1password"     # desktop app — its CLI integration unlocks `op` with Touch ID
 cask "1password-cli" # `op` — repos' .envrc files read secrets from 1Password, no paste
 cask "zed"           # editor
+cask "zoom"          # video calls / client meetings
