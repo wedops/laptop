@@ -180,6 +180,9 @@ cat <<'EOF'
         • "Use the SSH agent"              (git over SSH)
         • Touch ID unlock
 
+  For browser autofill, enable the bundled extension in
+  Safari → Settings → Extensions → "1Password".
+
   Then sign in and pull the workspace (clones the repo set into ~/code):
 
       op signin
