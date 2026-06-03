@@ -165,14 +165,20 @@ cat <<'EOF'
          • "Integrate with 1Password CLI"   (tokens)
          • "Use the SSH agent"              (git over SSH)
          • Touch ID unlock
-    2. Sign in once:   eval "$(op signin)"
+    2. Sign in once:   op signin
 
-  Make sure you can access the shared "wedops" vault — it holds the SSH key
-  (already trusted by GitHub) plus the op:// tokens. SSH is already pointed at
-  the 1Password agent (~/.ssh/config), so any repo just works:
+  You can now reach the shared "wedops" vault — it holds the SSH key
+  (trusted by GitHub) plus the op:// tokens. SSH already points at the
+  1Password agent, so cloning just works:
 
-      git clone git@github.com:…   # biometric tap, no key files
-      direnv allow                 # .envrc pulls tokens from your vault
-      npm install
+    • a single repo:
+        git clone git@github.com:…   # biometric tap, no key files
+        direnv allow                 # .envrc pulls tokens from your vault
+        npm install
+
+    • the whole workspace (clones the repo set into ~/int):
+        op document get workspace --vault wedops | bash
+        # clone somewhere else:
+        op document get workspace --vault wedops | WORKSPACE_ROOT=~/code bash
 
 EOF

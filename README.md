@@ -42,9 +42,10 @@ Both secrets and SSH keys come from **1Password** rather than living on disk:
 After the install finishes, do the one-time 1Password setup:
 
 1. 1Password app → **Settings → Developer** → enable **"Integrate with 1Password CLI"**, **"Use the SSH agent"**, and Touch ID unlock.
-2. `eval "$(op signin)"` once per session.
+2. `op signin` once per session.
 3. Make sure you can access the shared **`wedops`** vault — it holds the SSH key (already trusted by GitHub) and the `op://` tokens.
 4. `git clone git@github.com:…` and `direnv allow` in any repo — keys and tokens resolve from your vault via Touch ID. Nothing to paste.
+5. Or lay down the whole workspace at once: `op document get workspace --vault wedops | bash` (clones the repo set into `~/int`; clone elsewhere with `op document get workspace --vault wedops | WORKSPACE_ROOT=~/code bash`).
 
 > The SSH key was generated inside the `wedops` vault (`op item create --category "SSH Key" --ssh-generate-key Ed25519`) and its public key added to GitHub — the private key never touches a disk. The vault is shared with developers, who inherit it automatically (no per-dev key).
 
