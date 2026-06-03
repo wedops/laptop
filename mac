@@ -159,26 +159,19 @@ cat <<'EOF'
   ✅ Machine provisioned. Open a new terminal (or `source ~/.zshrc`).
 
   Secrets AND SSH keys come from 1Password — nothing is pasted or stored
-  on disk. One-time 1Password setup:
+  on disk. In the 1Password app, turn on:
 
-    1. 1Password app → Settings → Developer → turn on:
-         • "Integrate with 1Password CLI"   (tokens)
-         • "Use the SSH agent"              (git over SSH)
-         • Touch ID unlock
-    2. Sign in once:   op signin
+      Settings → Developer →
+        • "Integrate with 1Password CLI"   (tokens)
+        • "Use the SSH agent"              (git over SSH)
+        • Touch ID unlock
 
-  You can now reach the shared "wedops" vault — it holds the SSH key
-  (trusted by GitHub) plus the op:// tokens. SSH already points at the
-  1Password agent, so cloning just works:
+  Then sign in and pull the workspace (clones the repo set into ~/code):
 
-    • a single repo:
-        git clone git@github.com:…   # biometric tap, no key files
-        direnv allow                 # .envrc pulls tokens from your vault
-        npm install
+      op signin
+      op document get workspace --vault wedops | bash
 
-    • the whole workspace (clones the repo set into ~/int):
-        op document get workspace --vault wedops | bash
-        # clone somewhere else:
-        op document get workspace --vault wedops | WORKSPACE_ROOT=~/code bash
+  Clone somewhere else:
+      op document get workspace --vault wedops | WORKSPACE_ROOT=~/elsewhere bash
 
 EOF
