@@ -43,8 +43,10 @@ After the install finishes, do the one-time 1Password setup:
 
 1. 1Password app → **Settings → Developer** → enable **"Integrate with 1Password CLI"**, **"Use the SSH agent"**, and Touch ID unlock.
 2. `eval "$(op signin)"` once per session.
-3. Put your SSH key in 1Password (import your existing one or create a new SSH Key item), with its public key on GitHub.
+3. Make sure you can access the shared **`wedops`** vault — it holds the SSH key (already trusted by GitHub) and the `op://` tokens.
 4. `git clone git@github.com:…` and `direnv allow` in any repo — keys and tokens resolve from your vault via Touch ID. Nothing to paste.
+
+> The SSH key is seeded into the `wedops` vault once, via the 1Password **app** (New Item → SSH Key → import `~/.ssh/id_ed25519`) — the CLI can't import private keys. The vault is then shared with developers, who inherit it automatically.
 
 ## Customizing
 

@@ -166,11 +166,10 @@ cat <<'EOF'
          • "Use the SSH agent"              (git over SSH)
          • Touch ID unlock
     2. Sign in once:   eval "$(op signin)"
-    3. Put your SSH key in 1Password — import the existing one or create a
-       new SSH Key item — and make sure its public key is on GitHub.
 
-  SSH is already pointed at the 1Password agent (~/.ssh/config), so any repo
-  just works:
+  Make sure you can access the shared "wedops" vault — it holds the SSH key
+  (already trusted by GitHub) plus the op:// tokens. SSH is already pointed at
+  the 1Password agent (~/.ssh/config), so any repo just works:
 
       git clone git@github.com:…   # biometric tap, no key files
       direnv allow                 # .envrc pulls tokens from your vault
