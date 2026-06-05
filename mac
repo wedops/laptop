@@ -183,12 +183,13 @@ cat <<'EOF'
   For browser autofill, enable the bundled extension in
   Safari → Settings → Extensions → "1Password".
 
-  Then sign in and pull the workspace (clones the repo set into ~/code):
+  Then sign in and pull the workspace into ~/code (the gods monorepo at
+  ~/code/wedops, plus the client repos):
 
       op signin
       op document get workspace --vault wedops | bash
 
-  Clone somewhere else:
-      op document get workspace --vault wedops | WORKSPACE_ROOT=~/elsewhere bash
+  Just one group:   ... | bash -s -- wedops
+  Clone elsewhere:  ... | WORKSPACE_ROOT=~/elsewhere bash
 
 EOF

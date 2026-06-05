@@ -51,7 +51,7 @@ After the install finishes:
    op document get workspace --vault wedops | bash
    ```
 
-   Clones into `~/code`; clone elsewhere with `op document get workspace --vault wedops | WORKSPACE_ROOT=~/elsewhere bash`.
+   Clones into `~/code` — the gods monorepo at `~/code/wedops`, the client repos namespaced alongside. Scope to one group with `… | bash -s -- wedops`, or set `WORKSPACE_ROOT=~/path` to clone elsewhere.
 
 > The SSH key was generated inside the `wedops` vault (`op item create --category "SSH Key" --ssh-generate-key Ed25519`) and its public key added to GitHub — the private key never touches a disk. The vault is shared with developers, who inherit it automatically (no per-dev key).
 
