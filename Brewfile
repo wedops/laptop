@@ -11,6 +11,7 @@ tap "supabase/tap"
 
 brew "mise"        # runtime version manager — provisions Node per ~/.config/mise/config.toml
 brew "direnv"      # loads gitignored .envrc files (e.g. the GitHub Packages PAT)
+brew "gh"          # GitHub CLI — auth, repo creation, `gh api`, PR/release workflows
 brew "starship"    # shell prompt (wired into ~/.zshrc)
 brew "redis"       # local Redis for @wedops/zeus-redis + dependents
 brew "libpq"       # Postgres client libs/CLIs (psql, pg_dump) for athena/db work; keg-only
