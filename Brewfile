@@ -27,3 +27,4 @@ cask "1password"     # desktop app (bundles the Safari extension); CLI integrati
 cask "1password-cli" # `op` — repos' .envrc files read secrets from 1Password, no paste
 cask "zed"           # editor
 cask "zoom"          # video calls / client meetings
+cask "vlc"           # media player
