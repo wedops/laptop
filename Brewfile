@@ -19,6 +19,10 @@ brew "netlify-cli" # deploys the static marketing site
 brew "supabase/tap/supabase" # Supabase CLI for managed Postgres
 brew "ffmpeg"      # media transcoding — also yt-dlp's mux/encode backend
 brew "yt-dlp"      # video/audio downloader
+brew "imagemagick" # image processing for brand assets — peer to ffmpeg
+brew "jq"          # JSON on the CLI (op / gh api / curl pipelines)
+brew "ripgrep"     # fast recursive code search across the monorepos
+brew "cloudflared" # tunnel localhost for OAuth redirects + email-webhook testing
 
 # --- GUI apps / casks -----------------------------------------------------
 
@@ -28,3 +32,8 @@ cask "1password-cli" # `op` — repos' .envrc files read secrets from 1Password,
 cask "zed"           # editor
 cask "zoom"          # video calls / client meetings
 cask "vlc"           # media player
+cask "transmission"  # BitTorrent client
+cask "tableplus"     # Postgres GUI for the athena/stability DBs (psql has no GUI)
+cask "ghostty"       # terminal emulator
+cask "linear-linear" # Linear desktop app (INT issues live in the Linear API)
+cask "rectangle"     # window tiling / management
