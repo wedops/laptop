@@ -4,9 +4,6 @@
 # verifies everything is present. Every entry has a reason noted next to it —
 # keep this list honest, it's the source of truth for what a machine needs.
 
-# Supabase CLI lives in its own tap.
-tap "supabase/tap"
-
 # --- CLIs / daemons -------------------------------------------------------
 
 brew "mise"        # runtime version manager — provisions Node per ~/.config/mise/config.toml
@@ -16,7 +13,6 @@ brew "starship"    # shell prompt (wired into ~/.zshrc)
 brew "redis"       # local Redis for @wedops/zeus-redis + dependents
 brew "libpq"       # Postgres client libs/CLIs (psql, pg_dump) for athena/db work; keg-only
 brew "netlify-cli" # deploys the static marketing site
-brew "supabase/tap/supabase" # Supabase CLI for managed Postgres
 brew "ffmpeg"      # media transcoding — also yt-dlp's mux/encode backend
 brew "yt-dlp"      # video/audio downloader
 brew "imagemagick" # image processing for brand assets — peer to ffmpeg
