@@ -31,5 +31,5 @@ cask "vlc"           # media player
 cask "transmission"  # BitTorrent client
 cask "tableplus"     # Postgres GUI for the athena/stability DBs (psql has no GUI)
 cask "ghostty"       # terminal emulator
-cask "linear-linear" # Linear desktop app (INT issues live in the Linear API)
+cask "linear"        # Linear desktop app (INT issues live in the Linear API)
 cask "rectangle"     # window tiling / management
