@@ -26,7 +26,7 @@ You'll be asked for your macOS password once. It's safe to run more than once �
   - `ffmpeg`, `yt-dlp` — media transcoding / downloads
   - `1password` + `1password-cli` — secrets & SSH via `op` (see below); the app also bundles the Safari extension
   - `zed`, `zoom`
-- Wires `mise`, `starship`, and `direnv` into `~/.zshrc` (only if not already there)
+- Wires `mise`, `starship`, `direnv`, and keg-only `libpq` (so `psql`/`pg_dump` are on `PATH`) into `~/.zshrc` (only if not already there)
 - Provisions **Node** via mise (latest LTS — Node 24+, what the repos require)
 - Installs **Claude Code** via Anthropic's native installer (into `~/.local/bin`)
 - Points `~/.ssh/config` at the **1Password SSH agent** (so `git` uses your vault-stored key)

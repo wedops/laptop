@@ -93,6 +93,7 @@ brew bundle --file="$REPO_ROOT/Brewfile"
 
 fancy_echo "Wiring up the shell (idempotent)…"
 append_to_zshrc 'export PATH="$HOME/.local/bin:$PATH"'
+append_to_zshrc 'export PATH="/opt/homebrew/opt/libpq/bin:$PATH"'  # keg-only libpq: put psql/pg_dump on PATH
 append_to_zshrc 'eval "$(mise activate zsh)"'
 append_to_zshrc 'eval "$(starship init zsh)"'
 append_to_zshrc 'eval "$(direnv hook zsh)"'
