@@ -133,7 +133,27 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 7. SSH via the 1Password agent
+# 7. Codesaver — passive code screensaver
+# ---------------------------------------------------------------------------
+#
+# A small local tool that page-flips through a folder of source with syntax
+# highlighting — pleasant on an idle second monitor. Its launcher ships in the
+# repo; we symlink it onto PATH (~/.local/bin, wired in step 4) and install its
+# lone npm dependency (the highlight.js assets) so it runs fully offline.
+
+CODESAVER="$REPO_ROOT/codesaver"
+if [ -d "$CODESAVER" ]; then
+  ln -sf "$CODESAVER/codesaver" "$HOME/.local/bin/codesaver"
+  if [ ! -d "$CODESAVER/node_modules/@highlightjs/cdn-assets" ]; then
+    fancy_echo "Installing codesaver assets…"
+    ( cd "$CODESAVER" && mise exec -- npm install --no-audit --no-fund )
+  else
+    fancy_echo "Codesaver already set up — 'codesaver <folder>' to run it."
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# 8. SSH via the 1Password agent
 # ---------------------------------------------------------------------------
 #
 # Two pieces so git uses your vault-stored key (biometric approval, no private

@@ -29,6 +29,7 @@ You'll be asked for your macOS password once. It's safe to run more than once �
 - Wires `mise`, `starship`, `direnv`, and keg-only `libpq` (so `psql`/`pg_dump` are on `PATH`) into `~/.zshrc` (only if not already there)
 - Provisions **Node** via mise (latest LTS — Node 24+, what the repos require)
 - Installs **Claude Code** via Anthropic's native installer (into `~/.local/bin`)
+- Installs **[codesaver](codesaver/)** — a passive code screensaver that page-flips through a folder of source with syntax highlighting; symlinks the `codesaver` command onto `PATH` and fetches its (offline) highlight.js assets
 - Points `~/.ssh/config` at the **1Password SSH agent** (so `git` uses your vault-stored key)
 
 It does **not** touch any individual repo. Cloning a repo and authing is repo-specific — the script prints those next steps when it finishes.

@@ -1,0 +1,12 @@
+{
+  "name": "codesaver",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Passive code screensaver — page-flips through a folder of source files.",
+  "scripts": {
+    "start": "python3 server.py"
+  },
+  "dependencies": {
+    "@highlightjs/cdn-assets": "^11.9.0"
+  }
+}

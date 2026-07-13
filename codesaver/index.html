@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>code screensaver</title>
+<link rel="stylesheet" id="hljs-theme" href="/vendor/styles/night-owl.min.css">
+<script src="/vendor/highlight.min.js"></script>
+<style>
+  :root {
+    /* Fluid type: legible on a 13" laptop, fills a 50" wall.
+       vmin tracks the smaller viewport edge, so it scales with the screen,
+       not the aspect ratio. Clamp keeps it sane at both extremes. */
+    --code-size: clamp(15px, 1.9vmin, 42px);
+    --bg: #0d1117;
+    --fade: 1100ms;
+    --gutter: #4b5563;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
+    cursor: none;
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  #stage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 3.5vmin 4vmin 5.5vmin;
+  }
+  #code-wrap {
+    flex: 1;
+    min-height: 0;
+    opacity: 0;
+    transition: opacity var(--fade) ease;
+  }
+  #code-wrap.show { opacity: 1; }
+  pre {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 2.2ch;
+    font-size: var(--code-size);
+    line-height: 1.55;
+  }
+  pre .ln {
+    text-align: right;
+    color: var(--gutter);
+    user-select: none;
+    white-space: pre;
+  }
+  pre code {
+    background: none !important;
+    padding: 0 !important;
+    white-space: pre;
+    overflow: hidden;
+  }
+  /* Long lines shouldn't wrap and throw off pagination — clip them. */
+  #meta {
+    position: fixed;
+    left: 4vmin;
+    bottom: 2vmin;
+    font-size: clamp(11px, 1.15vmin, 22px);
+    color: #6b7686;
+    letter-spacing: 0.04em;
+    display: flex;
+    gap: 1.5ch;
+    align-items: baseline;
+  }
+  #meta .path { color: #8b98a9; }
+  #meta .prog { color: #4b5563; }
+  #hint {
+    position: fixed;
+    right: 4vmin;
+    bottom: 2vmin;
+    font-size: clamp(10px, 1vmin, 18px);
+    color: #3a4250;
+  }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div id="code-wrap"><pre><span class="ln" id="ln"></span><code id="code" class="hljs"></code></pre></div>
+  </div>
+  <div id="meta"><span class="path" id="path"></span><span class="prog" id="prog"></span></div>
+  <div id="hint">T: theme  &middot;  any key / click: skip</div>
+
+<script>
+const PAGE_HOLD_MS = 11000;   // how long each screenful lingers
+const GAP_MS = 350;           // dark beat between pages
+const wrap = document.getElementById('code-wrap');
+const codeEl = document.getElementById('code');
+const lnEl = document.getElementById('ln');
+const pathEl = document.getElementById('path');
+const progEl = document.getElementById('prog');
+
+const EXT_LANG = {
+  js:'javascript', jsx:'javascript', mjs:'javascript', cjs:'javascript',
+  ts:'typescript', tsx:'typescript', py:'python', rb:'ruby', go:'go',
+  rs:'rust', java:'java', kt:'kotlin', swift:'swift', c:'c', h:'c',
+  cc:'cpp', cpp:'cpp', hpp:'cpp', cs:'csharp', php:'php', sh:'bash',
+  zsh:'bash', bash:'bash', lua:'lua', sql:'sql', html:'xml', css:'css',
+  scss:'scss', vue:'xml', svelte:'xml', json:'json', yml:'yaml',
+  yaml:'yaml', toml:'ini', md:'markdown', ex:'elixir', exs:'elixir',
+};
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+// --- themes: press T to cycle, remembered across sessions ---
+const THEMES = [
+  'night-owl', 'github-dark', 'tokyo-night-dark', 'monokai',
+  'nord', 'gradient-dark', 'panda-syntax-dark', 'atom-one-dark',
+  'stackoverflow-dark',
+];
+const themeLink = document.getElementById('hljs-theme');
+let themeIdx = Math.max(0, THEMES.indexOf(localStorage.getItem('cs-theme') || 'night-owl'));
+
+function applyTheme() {
+  const name = THEMES[themeIdx];
+  themeLink.onload = () => {
+    // Match the page background to the theme's own code background.
+    const probe = document.createElement('code');
+    probe.className = 'hljs';
+    probe.style.cssText = 'position:absolute;visibility:hidden';
+    document.body.appendChild(probe);
+    const bg = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    if (bg && !/rgba?\(0, 0, 0, 0\)/.test(bg)) {
+      document.documentElement.style.setProperty('--bg', bg);
+    }
+  };
+  themeLink.href = '/vendor/styles/' + name + '.min.css';
+  localStorage.setItem('cs-theme', name);
+  flashTheme(name);
+}
+function cycleTheme() {
+  themeIdx = (themeIdx + 1) % THEMES.length;
+  applyTheme();
+}
+let flashT;
+function flashTheme(name) {
+  const el = document.getElementById('hint');
+  el.textContent = 'theme: ' + name;
+  clearTimeout(flashT);
+  flashT = setTimeout(() => { el.textContent = 'T: theme  ·  any key / click: skip'; }, 1800);
+}
+
+let skip = false;
+addEventListener('keydown', (e) => {
+  if (e.key === 't' || e.key === 'T') { e.preventDefault(); cycleTheme(); return; }
+  skip = true;
+});
+addEventListener('click', () => { skip = true; });
+applyTheme();
+
+// How many lines fit in the current viewport at the current font size.
+function linesPerPage() {
+  const lh = parseFloat(getComputedStyle(codeEl).lineHeight) || 24;
+  const h = document.getElementById('code-wrap').clientHeight;
+  return Math.max(4, Math.floor(h / lh) - 1);
+}
+
+async function interruptibleHold(ms) {
+  const step = 100;
+  for (let e = 0; e < ms; e += step) {
+    if (skip) { skip = false; return; }
+    await sleep(step);
+  }
+}
+
+async function showPage(rel, lang, lines, start, count, pageIdx, pageTotal) {
+  const slice = lines.slice(start, start + count);
+  const code = slice.join('\n');
+  let html;
+  try {
+    html = lang && hljs.getLanguage(lang)
+      ? hljs.highlight(code, { language: lang }).value
+      : hljs.highlightAuto(code).value;
+  } catch { html = code.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+  codeEl.innerHTML = html;
+  lnEl.textContent = Array.from({length: slice.length}, (_, i) => start + i + 1).join('\n');
+  pathEl.textContent = rel;
+  progEl.textContent = pageTotal > 1 ? `${pageIdx}/${pageTotal}` : '';
+
+  wrap.classList.add('show');
+  await interruptibleHold(PAGE_HOLD_MS);
+  wrap.classList.remove('show');
+  await sleep(GAP_MS + 800); // wait out the fade
+}
+
+// Keep trying the server rather than giving up — the tab may outlive a
+// server restart, and should reconnect on its own when it comes back.
+async function fetchFilesResilient() {
+  let attempt = 0;
+  while (true) {
+    try {
+      const r = await fetch('/api/files', { cache: 'no-store' });
+      if (r.ok) return await r.json();
+    } catch { /* server down — keep waiting */ }
+    attempt++;
+    pathEl.textContent = 'waiting for server…';
+    progEl.textContent = attempt > 1 ? `retry ${attempt}` : '';
+    wrap.classList.remove('show');
+    await sleep(2000);
+  }
+}
+
+async function run() {
+  let files = await fetchFilesResilient();
+  if (!files.length) { pathEl.textContent = 'no code files found'; return; }
+  shuffle(files);
+
+  let fi = 0;
+  while (true) {
+    const rel = files[fi % files.length];
+    fi++;
+    let text;
+    try {
+      const r = await fetch('/file?path=' + encodeURIComponent(rel), { cache: 'no-store' });
+      if (!r.ok) { await sleep(500); continue; }
+      text = await r.text();
+    } catch { await sleep(1500); continue; }  // server hiccup — back off, don't spin
+
+    const lines = text.replace(/\t/g, '  ').split('\n');
+    const ext = rel.split('.').pop().toLowerCase();
+    const lang = EXT_LANG[ext];
+    const per = linesPerPage();
+    const pageTotal = Math.max(1, Math.ceil(lines.length / per));
+
+    for (let p = 0; p < pageTotal; p++) {
+      await showPage(rel, lang, lines, p * per, per, p + 1, pageTotal);
+    }
+  }
+}
+
+run();
+</script>
+</body>
+</html>

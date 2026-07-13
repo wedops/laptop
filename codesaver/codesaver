@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Launch the code screensaver against a folder and open it fullscreen-ready.
+#   codesaver ~/thc/admin
+#   codesaver ~/thc/email --port 9000
+set -euo pipefail
+
+# Resolve through the symlink so we find server.py in the real install dir.
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  LDIR="$(cd "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$LDIR/$SOURCE"
+done
+DIR="$(cd "$(dirname "$SOURCE")" && pwd)"
+PORT=8777
+ROOT="$PWD"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --port) PORT="$2"; shift 2 ;;
+    -h|--help) echo "usage: codesaver [FOLDER] [--port N]"; exit 0 ;;
+    *) ROOT="$1"; shift ;;
+  esac
+done
+
+# Open the browser once the server is up, then hand the terminal to the server
+# so Ctrl+C stops everything.
+( for _ in $(seq 1 50); do
+    if curl -s -o /dev/null "http://localhost:$PORT/" 2>/dev/null; then
+      open "http://localhost:$PORT/"
+      break
+    fi
+    sleep 0.1
+  done ) &
+
+exec python3 "$DIR/server.py" "$ROOT" --port "$PORT"
