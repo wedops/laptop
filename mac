@@ -205,12 +205,12 @@ cat <<'EOF'
   Safari → Settings → Extensions → "1Password".
 
   Then sign in and pull the workspace into ~/code (wedops + the Intensity
-  Band and Hook Club repos):
+  Band, Hook Club, and Assistie repos):
 
       op signin
       op document get workspace --vault wedops | bash
 
-  One group:        ... | bash -s -- wedops      (or: int | thc)
-  Clone into ~:     ... | WORKSPACE_ROOT=$HOME bash   (-> ~/int, ~/thc, ~/wedops)
+  One group:        ... | bash -s -- wedops      (or: int | thc | ass)
+  Clone into ~:     ... | WORKSPACE_ROOT=$HOME bash   (-> ~/int, ~/thc, ~/ass, ~/wedops)
 
 EOF
