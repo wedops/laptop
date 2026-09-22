@@ -210,7 +210,7 @@ cat <<'EOF'
       op signin
       op document get workspace --vault wedops | bash
 
-  One group:        ... | bash -s -- wedops      (or: int | thc | ass)
-  Clone into ~:     ... | WORKSPACE_ROOT=$HOME bash   (-> ~/int, ~/thc, ~/ass, ~/wedops)
+  One group:        ... | bash -s -- wedops      (or: int | thc | sbq)
+  Clone into ~:     ... | WORKSPACE_ROOT=$HOME bash   (-> ~/int, ~/thc, ~/sbq, ~/wedops)
 
 EOF
