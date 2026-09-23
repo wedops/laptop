@@ -32,6 +32,6 @@ cask "spotify"       # music streaming
 cask "transmission"  # BitTorrent client
 cask "tableplus"     # Postgres GUI for the athena/stability DBs (psql has no GUI)
 cask "ghostty"       # terminal emulator
-cask "linear"        # Linear desktop app (INT issues live in the Linear API)
+cask "linear"        # Linear desktop app (client issues live in the Linear API)
 cask "rectangle"     # window tiling / management
 cask "obsidian"      # markdown notes / knowledge base

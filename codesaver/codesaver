@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Launch the code screensaver against a folder and open it fullscreen-ready.
-#   codesaver ~/sbq/admin
-#   codesaver ~/sbq/app --port 9000
+#   codesaver ~/yourbrand/admin
+#   codesaver ~/yourbrand/app --port 9000
 set -euo pipefail
 
 # Resolve through the symlink so we find server.py in the real install dir.
