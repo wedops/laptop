@@ -9,7 +9,7 @@ which symlinks the `codesaver` command onto your `PATH`.
 
 ```bash
 codesaver ~/wedops          # any folder; defaults to the current directory
-codesaver ~/thc/admin --port 9000
+codesaver ~/sbq/admin --port 9000
 ```
 
 It opens your browser to the screensaver and starts paging. Fullscreen with
