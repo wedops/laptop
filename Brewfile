@@ -13,6 +13,7 @@ brew "starship"    # shell prompt (wired into ~/.zshrc)
 brew "redis"       # local Redis for @wedops/zeus-redis + dependents
 brew "libpq"       # Postgres client libs/CLIs (psql, pg_dump) for athena/db work; keg-only
 brew "netlify-cli" # deploys the static marketing site
+brew "flyctl"      # fly.io CLI — deploys the client apps (portal, admin, site)
 brew "ffmpeg"      # media transcoding — also yt-dlp's mux/encode backend
 brew "yt-dlp"      # video/audio downloader
 brew "imagemagick" # image processing for brand assets — peer to ffmpeg
